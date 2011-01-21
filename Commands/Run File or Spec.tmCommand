@@ -45,12 +45,15 @@ if(process.ENV.TM_FILENAME.match(/(.*)spec\.js/)) {
   JSpec.report();
 
 } else {
-  var script = process.createChildProcess("node", [process.ENV.TM_FILEPATH]);
-  script.addListener("output", function(data) {
-    if (data !== null) { sys.puts(data); }
+  var script = require("child_process").spawn("node", [process.ENV.TM_FILEPATH]);
+  script.stdout.on("data", function(data) {
+    sys.puts(data);
   });
-  script.addListener("error", function(data) {
-    if (data !== null) { sys.puts("ERROR: " + data); }
+  script.stderr.on("data", function(data) {
+    sys.puts(data);
+  });
+  script.on('exit', function (code) {
+    sys.puts('child process exited with code ' + code);
   });
 }
 </string>
